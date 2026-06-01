@@ -1,0 +1,610 @@
+/* ==========================================================================
+   STYLE SYSTEM: BOTANICAL GLASSMORPHISM FOR MEDICINAL LEAF IDENTIFICATION
+   ========================================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,400&display=swap');
+
+:root {
+    --primary: #1b4d3e;          /* Deep Forest Green */
+    --primary-light: #2c6e49;    /* Bright Emerald Green */
+    --accent: #d8a47f;           /* Warm Earthy Gold */
+    --bg-dark: #0a110d;          /* Botanical Midnight */
+    --bg-card: rgba(27, 43, 36, 0.45); /* Forest Semi-transparent Glass */
+    --border-glass: rgba(255, 255, 255, 0.08);
+    --border-glow: rgba(44, 110, 73, 0.4);
+    --text-light: #f4f7f5;
+    --text-muted: #9fb2a8;
+    --success: #38b000;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(circle at 10% 20%, #112219 0%, var(--bg-dark) 90%);
+    color: var(--text-light);
+    min-height: 100vh;
+    overflow-x: hidden;
+    line-height: 1.6;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: var(--bg-dark);
+}
+::-webkit-scrollbar-thumb {
+    background: var(--primary-light);
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: var(--accent);
+}
+
+/* Container */
+.app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+/* Typography */
+h1, h2, h3, .brand-font {
+    font-family: 'Playfair Display', serif;
+}
+
+/* Header Section */
+.header-section {
+    text-align: center;
+    margin-bottom: 3.5rem;
+    position: relative;
+    padding-top: 1rem;
+}
+
+.badge-botanical {
+    background: rgba(216, 164, 127, 0.15);
+    border: 1px solid var(--accent);
+    color: var(--accent);
+    padding: 0.4rem 1rem;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    display: inline-block;
+    margin-bottom: 1rem;
+    backdrop-filter: blur(5px);
+}
+
+.header-title {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #ffffff;
+    line-height: 1.2;
+    margin-bottom: 0.75rem;
+    text-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.header-title span {
+    color: var(--accent);
+    font-style: italic;
+}
+
+.header-subtitle {
+    color: var(--text-muted);
+    font-size: 1.15rem;
+    max-width: 700px;
+    margin: 0 auto;
+    font-weight: 300;
+}
+
+/* Glass Card Component */
+.glass-card {
+    background: var(--bg-card);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--border-glass);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 
+                inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+    position: relative;
+    overflow: hidden;
+}
+
+.glass-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 200%;
+    height: 100%;
+    background: linear-gradient(
+        to right,
+        rgba(255, 255, 255, 0) 0%,
+        rgba(255, 255, 255, 0.03) 50%,
+        rgba(255, 255, 255, 0) 100%
+    );
+    transform: rotate(25deg);
+    transition: all 0.75s ease;
+    pointer-events: none;
+}
+
+.glass-card:hover::before {
+    left: 100%;
+}
+
+/* Drag & Drop Upload Zone */
+.upload-zone {
+    border: 2px dashed rgba(44, 110, 73, 0.5);
+    border-radius: 15px;
+    padding: 3rem 2rem;
+    text-align: center;
+    background: rgba(10, 17, 13, 0.3);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.upload-zone:hover, .upload-zone.dragover {
+    border-color: var(--accent);
+    background: rgba(44, 110, 73, 0.1);
+    box-shadow: 0 0 20px rgba(44, 110, 73, 0.2);
+}
+
+.upload-icon {
+    font-size: 3.5rem;
+    color: var(--accent);
+    margin-bottom: 1.25rem;
+    display: inline-block;
+    animation: float 3s ease-in-out infinite;
+}
+
+.upload-btn-real {
+    display: none;
+}
+
+.upload-label-btn {
+    display: inline-block;
+    background: linear-gradient(135deg, var(--primary-light), var(--primary));
+    color: #ffffff;
+    padding: 0.75rem 2rem;
+    border-radius: 50px;
+    font-weight: 600;
+    margin-top: 1.25rem;
+    box-shadow: 0 4px 15px rgba(27, 77, 62, 0.4);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.upload-label-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(44, 110, 73, 0.6);
+    background: linear-gradient(135deg, #378659, var(--primary-light));
+}
+
+.preview-container {
+    margin-top: 1.5rem;
+    display: none;
+    text-align: center;
+}
+
+.image-preview {
+    max-width: 100%;
+    max-height: 250px;
+    border-radius: 12px;
+    border: 2px solid var(--accent);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.5);
+    object-fit: cover;
+}
+
+/* Submit Button */
+.btn-submit {
+    width: 100%;
+    background: linear-gradient(135deg, var(--accent), #b8835f);
+    color: #121f19;
+    border: none;
+    padding: 1rem;
+    border-radius: 12px;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 1.5rem;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    box-shadow: 0 8px 25px rgba(216, 164, 127, 0.3);
+}
+
+.btn-submit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 30px rgba(216, 164, 127, 0.5);
+    background: linear-gradient(135deg, #e4b593, var(--accent));
+}
+
+.btn-submit:active {
+    transform: translateY(1px);
+}
+
+/* Flash Messages */
+.alert-container {
+    margin-bottom: 2rem;
+}
+
+.alert-botanical {
+    background: rgba(220, 53, 69, 0.15);
+    border: 1px solid rgba(220, 53, 69, 0.4);
+    color: #ff8585;
+    padding: 1rem 1.5rem;
+    border-radius: 10px;
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Grid Layouts */
+.grid-main {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2.5rem;
+    margin-bottom: 3.5rem;
+}
+
+@media (max-width: 900px) {
+    .grid-main {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* Botanical Info Cards on Home */
+.card-header-leaf {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 0.75rem;
+}
+
+.icon-circle {
+    width: 40px;
+    height: 40px;
+    background: rgba(44, 110, 73, 0.3);
+    border: 1px solid var(--primary-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--accent);
+    font-size: 1.2rem;
+}
+
+.card-title-leaf {
+    font-size: 1.35rem;
+    font-weight: 600;
+}
+
+.card-subtitle-leaf {
+    font-size: 0.85rem;
+    font-style: italic;
+    color: var(--text-muted);
+}
+
+.scrollable-info {
+    max-height: 430px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+}
+
+.leaf-list-item {
+    padding: 1rem;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.03);
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.leaf-list-item:hover {
+    background: rgba(44, 110, 73, 0.15);
+    border-color: rgba(44, 110, 73, 0.3);
+    transform: translateX(5px);
+}
+
+/* Model Status Component */
+.model-status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: rgba(10, 17, 13, 0.8);
+    border: 1px solid var(--border-glass);
+    padding: 1rem 2rem;
+    border-radius: 100px;
+    margin-bottom: 2.5rem;
+    backdrop-filter: blur(10px);
+}
+
+.status-indicator {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 500;
+}
+
+.status-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    box-shadow: 0 0 10px currentColor;
+}
+
+.status-dot.active {
+    background: var(--success);
+    color: var(--success);
+}
+
+.status-dot.inactive {
+    background: #ffc107;
+    color: #ffc107;
+}
+
+/* ==========================================================================
+   RESULT PAGE SPECIFIC STYLES
+   ========================================================================== */
+
+.result-container {
+    display: grid;
+    grid-template-columns: 4fr 6fr;
+    gap: 2.5rem;
+}
+
+@media (max-width: 900px) {
+    .result-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+.result-image-card {
+    text-align: center;
+}
+
+.uploaded-result-img {
+    width: 100%;
+    aspect-ratio: 1/1;
+    border-radius: 15px;
+    object-fit: cover;
+    border: 2px solid var(--accent);
+    box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+    margin-bottom: 1.5rem;
+}
+
+.confidence-meter {
+    background: rgba(10, 17, 13, 0.5);
+    border-radius: 15px;
+    padding: 1.25rem;
+    border: 1px solid var(--border-glass);
+}
+
+.confidence-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.5rem;
+}
+
+.confidence-title {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.confidence-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--accent);
+}
+
+.progress-track {
+    width: 100%;
+    height: 10px;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 5px;
+    overflow: hidden;
+}
+
+.progress-bar-glow {
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary-light), var(--accent));
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(216, 164, 127, 0.5);
+    transition: width 1s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+/* Botanical Breakdown Details */
+.botanical-header {
+    margin-bottom: 1.5rem;
+}
+
+.common-name {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 0.25rem;
+}
+
+.scientific-name {
+    font-style: italic;
+    color: var(--accent);
+    font-size: 1.15rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.scientific-name::before {
+    content: '';
+    display: inline-block;
+    width: 15px;
+    height: 1px;
+    background: var(--accent);
+}
+
+.botanical-description {
+    color: var(--text-muted);
+    font-size: 1.05rem;
+    margin-bottom: 2rem;
+    line-height: 1.7;
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.info-sub-card {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.info-sub-card-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.info-sub-card-title i {
+    color: var(--accent);
+}
+
+.benefit-list {
+    list-style: none;
+}
+
+.benefit-list li {
+    margin-bottom: 0.75rem;
+    position: relative;
+    padding-left: 1.5rem;
+    color: var(--text-muted);
+}
+
+.benefit-list li strong {
+    color: var(--text-light);
+}
+
+.benefit-list li::before {
+    content: '✦';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: var(--accent);
+    font-size: 0.8rem;
+}
+
+.usage-text {
+    color: var(--text-muted);
+    line-height: 1.7;
+}
+
+/* Distribution Chart Probability */
+.distribution-list {
+    margin-top: 1.5rem;
+}
+
+.dist-item {
+    margin-bottom: 0.75rem;
+}
+
+.dist-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.85rem;
+    margin-bottom: 0.25rem;
+    color: var(--text-muted);
+}
+
+.dist-label.winner {
+    color: var(--accent);
+    font-weight: 600;
+}
+
+.dist-bar-track {
+    width: 100%;
+    height: 6px;
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.dist-bar-fill {
+    height: 100%;
+    background: var(--primary-light);
+    border-radius: 3px;
+    transition: width 1s ease-out;
+}
+
+.dist-bar-fill.winner {
+    background: var(--accent);
+    box-shadow: 0 0 5px rgba(216, 164, 127, 0.5);
+}
+
+/* Navigation back button */
+.btn-back {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: transparent;
+    color: var(--accent);
+    border: 1px solid var(--accent);
+    padding: 0.75rem 1.5rem;
+    border-radius: 50px;
+    font-weight: 600;
+    text-decoration: none;
+    transition: all 0.3s ease;
+    margin-top: 1rem;
+}
+
+.btn-back:hover {
+    background: var(--accent);
+    color: #121f19;
+    box-shadow: 0 0 15px rgba(216, 164, 127, 0.4);
+    transform: translateX(-3px);
+}
+
+/* Footer styling */
+.footer-botanical {
+    text-align: center;
+    margin-top: 5rem;
+    padding-top: 2rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    color: var(--text-muted);
+    font-size: 0.85rem;
+}
+
+.footer-botanical p {
+    margin-bottom: 0.5rem;
+}
+
+.footer-highlight {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+/* Keyframes */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}

@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Klasifikasi Daun Tanaman Obat - Random Forest & Flask</title>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Botanical Premium CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Header Section -->
+        <header class="header-section">
+            <span class="badge-botanical">Kecerdasan Buatan - Tugas 8</span>
+            <h1 class="header-title">Klasifikasi Daun <span>Tanaman Obat</span></h1>
+            <p class="header-subtitle">
+                Aplikasi berbasis web menggunakan algoritma <strong>Random Forest Classifier</strong> untuk mengidentifikasi jenis daun tanaman herbal secara cepat dan akurat.
+            </p>
+        </header>
+
+        <!-- Model Status Bar -->
+        <div class="model-status-bar">
+            <div class="status-indicator">
+                {% if model_status.trained %}
+                    <span class="status-dot active"></span>
+                    <span>Model RF Status: <strong style="color: var(--success)">Aktif & Siap</strong></span>
+                {% else %}
+                    <span class="status-dot inactive"></span>
+                    <span>Model RF Status: <strong style="color: #ffc107">Belum Dilatih</strong></span>
+                {% endif %}
+            </div>
+            <div>
+                <span>Akurasi Model: <strong style="color: var(--accent)">{{ model_status.accuracy }}</strong></span>
+            </div>
+            <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <i class="fa-solid fa-leaf" style="color: var(--accent);"></i>
+                <span><strong>5 Kategori</strong> Terdaftar</span>
+            </div>
+        </div>
+
+        <!-- Flash Alert Messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="alert-container">
+                    {% for category, message in messages %}
+                        <div class="alert-botanical">
+                            <i class="fa-solid fa-circle-exclamation"></i>
+                            <span>{{ message }}</span>
+                        </div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        <!-- Main Grid Layout -->
+        <div class="grid-main">
+            
+            <!-- Upload Panel -->
+            <section class="glass-card">
+                <h2 style="font-size: 1.8rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.75rem;">
+                    <i class="fa-solid fa-cloud-arrow-up" style="color: var(--accent); margin-right: 0.5rem;"></i>Analisis Gambar Daun
+                </h2>
+                
+                <form action="{{ url_for('predict') }}" method="POST" enctype="multipart/form-data">
+                    <div class="upload-zone" id="drop-zone">
+                        <div class="upload-icon">
+                            <i class="fa-solid fa-leaf-list"></i>
+                            <i class="fa-solid fa-images" style="display:block; font-size: 3rem; margin-top: -10px;"></i>
+                        </div>
+                        <p style="font-size: 1.1rem; font-weight: 500; margin-bottom: 0.5rem;">Seret & Lepas Gambar Daun di Sini</p>
+                        <p style="font-size: 0.85rem; color: var(--text-muted);">Mendukung format JPG, JPEG, PNG, WEBP (Maks. 5MB)</p>
+                        
+                        <input type="file" name="image" id="file-input" class="upload-btn-real" accept="image/*" required>
+                        <label for="file-input" class="upload-label-btn">
+                            <i class="fa-solid fa-folder-open" style="margin-right: 0.5rem;"></i>Pilih Berkas
+                        </label>
+                    </div>
+
+                    <!-- Image Preview Container -->
+                    <div class="preview-container" id="preview-container">
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem;">Pratinjau Gambar Daun:</p>
+                        <img src="" alt="Pratinjau Daun" class="image-preview" id="image-preview">
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="btn-submit">
+                        <i class="fa-solid fa-microscope" style="margin-right: 0.5rem;"></i>Mulai Klasifikasi
+                    </button>
+                </form>
+            </section>
+
+            <!-- Supported Leaves Sidebar -->
+            <section class="glass-card">
+                <h2 style="font-size: 1.8rem; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.08); padding-bottom: 0.75rem;">
+                    <i class="fa-solid fa-book-medical" style="color: var(--accent); margin-right: 0.5rem;"></i>Tanaman Obat Terdaftar
+                </h2>
+                
+                <div class="scrollable-info">
+                    {% for key, leaf in leaf_list.items() %}
+                        <div class="leaf-list-item">
+                            <div class="card-header-leaf">
+                                <div class="icon-circle">
+                                    <i class="fa-solid fa-seedling"></i>
+                                </div>
+                                <div>
+                                    <div class="card-title-leaf">{{ leaf.common_name.split(' (')[0] }}</div>
+                                    <div class="card-subtitle-leaf">{{ leaf.scientific_name }}</div>
+                                </div>
+                            </div>
+                            <p style="font-size: 0.9rem; color: var(--text-muted); line-height: 1.5;">
+                                {{ leaf.description[:140] }}...
+                            </p>
+                        </div>
+                    {% endfor %}
+                </div>
+            </section>
+
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer-botanical">
+            <p>Aplikasi Pendeteksi & Klasifikasi Jenis Daun Tanaman Obat Berbasis Web</p>
+            <p>Dikembangkan dengan <span class="footer-highlight">Flask Backend</span> &amp; <span class="footer-highlight">Random Forest Classifier</span></p>
+            <p style="margin-top: 1rem; font-size: 0.75rem; color: rgba(255,255,255,0.2);">© 2026 Tugas 8 Kecerdasan Buatan. All Rights Reserved.</p>
+        </footer>
+
+    </div>
+
+    <!-- Interactive Drag-and-Drop JS -->
+    <script>
+        const dropZone = document.getElementById('drop-zone');
+        const fileInput = document.getElementById('file-input');
+        const previewContainer = document.getElementById('preview-container');
+        const imagePreview = document.getElementById('image-preview');
+        const btnSubmit = document.getElementById('btn-submit');
+
+        // Highlight drop zone when item dragged over it
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            e.preventDefault();
+            dropZone.classList.add('dragover');
+        }
+
+        function unhighlight(e) {
+            e.preventDefault();
+            dropZone.classList.remove('dragover');
+        }
+
+        // Handle dropped files
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const files = dt.files;
+
+            if (files.length > 0) {
+                fileInput.files = files;
+                updatePreview(files[0]);
+            }
+        }
+
+        // Handle file selection from button
+        fileInput.addEventListener('change', function() {
+            if (this.files.length > 0) {
+                updatePreview(this.files[0]);
+            }
+        });
+
+        // Show image preview
+        function updatePreview(file) {
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imagePreview.src = e.target.result;
+                    previewContainer.style.display = 'block';
+                    
+                    // Smoothly scroll down to preview
+                    previewContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+                reader.readAsDataURL(file);
+            } else {
+                alert('Tolong unggah berkas bertipe gambar saja!');
+                fileInput.value = '';
+                previewContainer.style.display = 'none';
+            }
+        }
+    </script>
+</body>
+</html>

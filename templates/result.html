@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Klasifikasi Daun Tanaman Obat</title>
+    <!-- Google Fonts & Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom Botanical Premium CSS -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+
+    <div class="app-container">
+        
+        <!-- Header Section -->
+        <header class="header-section" style="margin-bottom: 2.5rem;">
+            <span class="badge-botanical">Hasil Analisis Model</span>
+            <h1 class="header-title">Identifikasi <span>Daun Sukses</span></h1>
+            <p class="header-subtitle">
+                Model Random Forest berhasil menganalisis ciri-ciri warna dan tekstur bentuk daun tanaman obat.
+            </p>
+        </header>
+
+        <!-- Result Container Grid -->
+        <div class="glass-card">
+            <div class="result-container">
+                
+                <!-- Left Column: Image and Main Confidence -->
+                <div class="result-image-card">
+                    <img src="{{ result.image_url }}" alt="Daun yang diunggah" class="uploaded-result-img">
+                    
+                    <div class="confidence-meter">
+                        <div class="confidence-header">
+                            <span class="confidence-title">Tingkat Keyakinan (Confidence)</span>
+                            <span class="confidence-value" id="conf-val">{{ result.confidence_pct }}%</span>
+                        </div>
+                        <div class="progress-track">
+                            <!-- Animasi progress bar menggunakan style width dinamis -->
+                            <div class="progress-bar-glow" style="width: 0%;" id="progress-bar"></div>
+                        </div>
+                    </div>
+
+                    <!-- Probability Distribution Chart -->
+                    <div class="info-sub-card" style="margin-top: 1.5rem; text-align: left; padding: 1.25rem;">
+                        <h4 style="font-size: 0.95rem; margin-bottom: 0.75rem; color: #ffffff;">
+                            <i class="fa-solid fa-chart-simple" style="color: var(--accent); margin-right: 0.5rem;"></i>Distribusi Keyakinan Kelas:
+                        </h4>
+                        <div class="distribution-list">
+                            {% for c_prob in result.class_probs %}
+                                {% set is_winner = (c_prob.name == result.class) %}
+                                <div class="dist-item">
+                                    <div class="dist-label {% if is_winner %}winner{% endif %}">
+                                        <span>{{ c_prob.display_name.split(' (')[0] }}</span>
+                                        <span>{{ c_prob.prob_pct }}%</span>
+                                    </div>
+                                    <div class="dist-bar-track">
+                                        <div class="dist-bar-fill {% if is_winner %}winner{% endif %}" style="width: {{ c_prob.prob_pct }}%"></div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Column: Botanical and Medicinal Profile -->
+                <div>
+                    <div class="botanical-header">
+                        <h2 class="common-name">{{ result.details.common_name }}</h2>
+                        <div class="scientific-name">{{ result.details.scientific_name }}</div>
+                    </div>
+
+                    <p class="botanical-description">
+                        {{ result.details.description }}
+                    </p>
+
+                    <!-- Benefits Sub-card -->
+                    <div class="info-sub-card">
+                        <h3 class="info-sub-card-title">
+                            <i class="fa-solid fa-hand-holding-medical"></i>Khasiat &amp; Manfaat Medis
+                        </h3>
+                        <ul class="benefit-list">
+                            {% for benefit in result.details.benefits %}
+                                <li>
+                                    {% if ': ' in benefit %}
+                                        {% set parts = benefit.split(': ') %}
+                                        <strong>{{ parts[0] }}:</strong> {{ parts[1] }}
+                                    {% else %}
+                                        {{ benefit }}
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+
+                    <!-- Traditional Usage Sub-card -->
+                    <div class="info-sub-card" style="margin-bottom: 2rem;">
+                        <h3 class="info-sub-card-title">
+                            <i class="fa-solid fa-mortar-pestle"></i>Cara Penggunaan Tradisional
+                        </h3>
+                        <p class="usage-text">
+                            {{ result.details.usage }}
+                        </p>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div style="display: flex; gap: 1rem; align-items: center;">
+                        <a href="{{ url_for('index') }}" class="btn-back">
+                            <i class="fa-solid fa-arrow-left"></i>Kembali ke Beranda
+                        </a>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <footer class="footer-botanical">
+            <p>Aplikasi Pendeteksi &amp; Klasifikasi Jenis Daun Tanaman Obat Berbasis Web</p>
+            <p>Dikembangkan dengan <span class="footer-highlight">Flask Backend</span> &amp; <span class="footer-highlight">Random Forest Classifier</span></p>
+            <p style="margin-top: 1rem; font-size: 0.75rem; color: rgba(255,255,255,0.2);">© 2026 Tugas 8 Kecerdasan Buatan. All Rights Reserved.</p>
+        </footer>
+
+    </div>
+
+    <!-- Trigger dynamic progress bar animation on load -->
+    <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                const progressBar = document.getElementById('progress-bar');
+                const targetPct = "{{ result.confidence_pct }}%";
+                progressBar.style.width = targetPct;
+            }, 150);
+        });
+    </script>
+</body>
+</html>
